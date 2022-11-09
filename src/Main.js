@@ -74,8 +74,8 @@ function Main() {
         lastUpdate = currentUpdate
 
         const stations = await (await fetch(`${domain}/bus/station?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
-        // const usages = await (await fetch(`http://localhost:8080/bus/path?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
-        // const usages = await (await fetch(`http://localhost:8080/bus/pathspec?routeNo=58`)).json()
+        // const usages = await (await fetch(`${domain}/bus/path?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
+        // const usages = await (await fetch(`${domain}/bus/pathspec?routeNo=58`)).json()
         const throughs = await (await fetch(`${domain}/bus/through?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
 
         if(lastUpdate === currentUpdate) {
@@ -101,6 +101,54 @@ function Main() {
                 // 지도에 원을 표시합니다
                 circle.setMap(map);
             })
+
+            // usages
+            // console.log(usages)
+            // console.log(usages.length)
+            // let index = 0;
+            //
+            // while (index < usages.length) {
+            //     const first = usages[index]
+            //     // const firstResult = proj4('TM127', 'WGS84', [first["posX"], first["posY"]]);
+            //
+            //     const list = []
+            //     let currentSequence = first["sequence"]
+            //
+            //     while (index < usages.length) {
+            //         const middle = usages[index]
+            //
+            //         if (first["fromId"] === middle["fromId"] && currentSequence === middle["sequence"]) {
+            //             // console.log(index + ", " + first + ", " + middle["routeId"])
+            //             // const middleResult = proj4('TM127', 'WGS84', [middle["posX"], middle["posY"]])
+            //             // list.push(new kakao.maps.LatLng(middleResult[1], middleResult[0]));
+            //             list.push(new kakao.maps.LatLng(middle["posY"], middle["posX"]))
+            //             index++;
+            //         } else {
+            //             break;
+            //         }
+            //
+            //         if(first["sequence"] !== middle["sequence"])
+            //             currentSequence++;
+            //     }
+            //
+            //     // console.log(list.length + ", " + index)
+            //
+            //     // 지금 리스트는 해당 sequence에 대한 연결 정보를 담고 있다.
+            //     const polyline = new kakao.maps.Polyline({
+            //         path: list, // 선을 구성하는 좌표배열 입니다
+            //         strokeWeight: 5, // 선의 두께 입니다
+            //         // strokeColor: '#FFAE00', // 선의 색깔입니다
+            //         strokeColor: `#000000`,
+            //         // strokeOpacity: 0.3, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+            //         strokeOpacity: 0.9,
+            //         strokeStyle: 'solid' // 선의 스타일입니다
+            //     });
+            //
+            //     mapObjects.push(polyline);
+            //     polyline.setMap(map);
+            //
+            //     // index++;
+            // }
 
             // throughs
             console.log(throughs)
