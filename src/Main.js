@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {getServerURL} from "./URLUtil";
+import poly from "proj4/lib/projections/poly";
 
 const INU_LATITUDE = 37.3751
 const INU_LONGITUDE = 126.6328
@@ -7,8 +8,8 @@ const INU_LONGITUDE = 126.6328
 const { kakao, proj4 } = window;
 
 function Main() {
-    const mapObjects = useState([])
-    const lastUpdate = useState(-1)
+    const mapObjects = []
+    let lastUpdate = -1
 
     const createMap = (markers) => {
         const container = document.getElementById('map');
@@ -34,15 +35,23 @@ function Main() {
 
     const registerDragStartEvent = (map) => {
         kakao.maps.event.addListener(map, 'dragstart', function(mouseEvent) {
-            console.log("drag strat, " + mapObjects.length)
-            while(mapObjects.length > 0) {
-                const obj = mapObjects.pop();
-
-                if(obj instanceof kakao.maps.Circle) {
-                    obj.setMap(null);
-                }
-            }
+            console.log("drag start, " + mapObjects.length)
+            removeAllMapObjects(map)
         });
+    }
+
+    const removeAllMapObjects = (map) => {
+        while(mapObjects.length > 0) {
+            const obj = mapObjects.pop();
+
+            if(obj instanceof kakao.maps.Circle) {
+                obj.setMap(null);
+            }
+
+            if(obj instanceof kakao.maps.Polyline) {
+                obj.setMap(null);
+            }
+        }
     }
 
     const registerDragEndEvent = (map) => {
@@ -53,44 +62,165 @@ function Main() {
         });
     }
 
-    const loadAllStations = (map) => {
+    const loadAllStations = async (map) => {
+        const domain = "http://localhost:8080"
         const center = map.getCenter();
         const lng = center.getLng();
         const lat = center.getLat();
-        const rangeX = 0.035
-        const rangeY = 0.025
+        const rangeX = 0.03
+        const rangeY = 0.02
+
+        const currentUpdate = Date.now()
+        lastUpdate = currentUpdate
+
+        const stations = await (await fetch(`${domain}/bus/station?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
+        // const usages = await (await fetch(`http://localhost:8080/bus/path?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
+        // const usages = await (await fetch(`http://localhost:8080/bus/pathspec?routeNo=58`)).json()
+        const throughs = await (await fetch(`${domain}/bus/through?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)).json()
+
+        if(lastUpdate === currentUpdate) {
+            stations.forEach(it => {
+                const result = proj4('TM127', 'WGS84', [it["posX"], it["posY"]]);
+                const latitude = result[1]
+                const longitude = result[0]
+
+                // console.log(latitude, longitude)
+
+                const circle = new kakao.maps.Circle({
+                    center: new kakao.maps.LatLng(latitude, longitude),  // 원의 중심좌표 입니다
+                    radius: 25, // 미터 단위의 원의 반지름입니다
+                    strokeWeight: 1, // 선의 두께입니다
+                    strokeColor: '#75B8FA', // 선의 색깔입니다
+                    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                    strokeStyle: 'dashed', // 선의 스타일 입니다
+                    fillColor: '#CFE7FF', // 채우기 색깔입니다
+                    fillOpacity: 0.95  // 채우기 불투명도 입니다
+                });
+
+                mapObjects.push(circle)
+                // 지도에 원을 표시합니다
+                circle.setMap(map);
+            })
+
+            // throughs
+            console.log(throughs)
+            console.log(throughs.length)
+            let index = 0;
+
+            while (index < throughs.length) {
+                const first = throughs[index]
+                const firstResult = proj4('TM127', 'WGS84', [first["posX"], first["posY"]]);
+
+                const list = []
+                let currentSequence = first["busStopSequence"]
+
+                while (index < throughs.length) {
+                    const middle = throughs[index]
+
+                    if (first["routeId"] === middle["routeId"] && currentSequence === middle["busStopSequence"]) {
+                        console.log(index + ", " + first + ", " + middle["routeId"])
+                        const middleResult = proj4('TM127', 'WGS84', [middle["posX"], middle["posY"]])
+                        list.push(new kakao.maps.LatLng(middleResult[1], middleResult[0]));
+                        index++;
+                    } else {
+                        break;
+                    }
+
+                    currentSequence++;
+                }
+
+                console.log(list.length + ", " + index)
+
+                // 지금 리스트는 해당 sequence에 대한 연결 정보를 담고 있다.
+                const polyline = new kakao.maps.Polyline({
+                    path: list, // 선을 구성하는 좌표배열 입니다
+                    strokeWeight: 5, // 선의 두께 입니다
+                    strokeColor: '#FFAE00', // 선의 색깔입니다
+                    strokeOpacity: 0.3, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                    strokeStyle: 'solid' // 선의 스타일입니다
+                });
+
+                mapObjects.push(polyline);
+                polyline.setMap(map);
+
+                // index++;
+            }
+        }
+        // usages
+        // console.log(usages.length);
+        // let index = 0;
+        //
+        // while(index < usages.length) {
+        //     const first = usages[index]
+        //
+        //     const list = [new kakao.maps.LatLng(first["posY"], first["posX"])]
+        //
+        //     while(index < usages.length) {
+        //         const middle = usages[index]
+        //
+        //         // console.log(index + ", " + first + ", " + middle["sequence"])
+        //         if(first["sequence"] === middle["sequence"]) {
+        //             list.push(new kakao.maps.LatLng(middle["posY"], middle["posX"]));
+        //             index++;
+        //         } else {
+        //             break;
+        //         }
+        //
+        //         // count++;
+        //         // if(count >= 1000)
+        //         //     break;
+        //     }
+        //
+        //     // 지금 리스트는 해당 sequence에 대한 연결 정보를 담고 있다.
+        //     const polyline = new kakao.maps.Polyline({
+        //         path: list, // 선을 구성하는 좌표배열 입니다
+        //         strokeWeight: 5, // 선의 두께 입니다
+        //         strokeColor: '#FFAE00', // 선의 색깔입니다
+        //         strokeOpacity: 0.7, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        //         strokeStyle: 'solid' // 선의 스타일입니다
+        //     });
+        //
+        //     mapObjects.push(polyline);
+        //     polyline.setMap(map);
+        //
+        //     index++;
+        // }
 
         // fetch('http://localhost:8080/bus/station')
-        fetch(`http://localhost:8080/bus/station?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)
-            .then((response) => response.json())
-            .then((data) => {
-                data.forEach(it => {
-                    const result = proj4('TM127', 'WGS84', [it["posX"], it["posY"]]);
-                    const latitude = result[1]
-                    const longitude = result[0]
-
-                    // console.log(latitude, longitude)
-
-                    const circle = new kakao.maps.Circle({
-                        center : new kakao.maps.LatLng(latitude, longitude),  // 원의 중심좌표 입니다
-                        radius: 30, // 미터 단위의 원의 반지름입니다
-                        strokeWeight: 1, // 선의 두께입니다
-                        strokeColor: '#75B8FA', // 선의 색깔입니다
-                        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-                        strokeStyle: 'dashed', // 선의 스타일 입니다
-                        fillColor: '#CFE7FF', // 채우기 색깔입니다
-                        fillOpacity: 0.95  // 채우기 불투명도 입니다
-                    });
-
-                    mapObjects.push(circle)
-                    // 지도에 원을 표시합니다
-                    circle.setMap(map);
-                })
-                console.log(data)
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
+        // fetch(`http://localhost:8080/bus/station?x=${lng}&y=${lat}&rangeX=${rangeX}&rangeY=${rangeY}`)
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         if(lastUpdate === currentUpdate) {
+        //             console.log(data)
+        //             data.forEach(it => {
+        //                 const result = proj4('TM127', 'WGS84', [it["posX"], it["posY"]]);
+        //                 const latitude = result[1]
+        //                 const longitude = result[0]
+        //
+        //                 // console.log(latitude, longitude)
+        //
+        //                 const circle = new kakao.maps.Circle({
+        //                     center: new kakao.maps.LatLng(latitude, longitude),  // 원의 중심좌표 입니다
+        //                     radius: 25, // 미터 단위의 원의 반지름입니다
+        //                     strokeWeight: 1, // 선의 두께입니다
+        //                     strokeColor: '#75B8FA', // 선의 색깔입니다
+        //                     strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        //                     strokeStyle: 'dashed', // 선의 스타일 입니다
+        //                     fillColor: '#CFE7FF', // 채우기 색깔입니다
+        //                     fillOpacity: 0.95  // 채우기 불투명도 입니다
+        //                 });
+        //
+        //                 mapObjects.push(circle)
+        //                 // 지도에 원을 표시합니다
+        //                 circle.setMap(map);
+        //             })
+        //
+        //             let k = data[0]["shortId"]
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.log(err.message);
+        //     });
     }
 
     useEffect(() => {
