@@ -1,15 +1,30 @@
-import "./SelectBar.css"
+import React, {useEffect, useState} from 'react'
 
-function selectBar(props) {
+import "./SelectBar.css"
+import "./InputText.css"
+
+function SelectBar(props) {
     const onClickEvent = props.onButtonClick
+    const onRouteNumberTextChanged = props.onRouteNumberTextChanged
 
     return (
-
         <div className="selectbar_background">
+            <div style={{margin: "30px 0px", fontSize: "38px"}}>Bus<br/>Improvement<br/>Simulation</div>
+
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent(0)}>All</button>
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent(1)}>Only Map</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(2)}>Shortest</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(3)}>Optimized</button>
+
+            <div className="empty_margin"/>
+            {/*<input type="text"/>*/}
+            <div className="col-3 input-effect">
+                <input className="effect-20" type="text" placeholder=" " onChange={onRouteNumberTextChanged}/>
+                <label>Route Number...</label>
+                <span className="focus-border"><i></i></span>
+            </div>
         </div>
     )
 }
 
-export default selectBar;
+export default SelectBar;

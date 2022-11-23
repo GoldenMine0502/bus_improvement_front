@@ -5,6 +5,7 @@ import SelectBar from "./SelectBar";
 import "./Main.css"
 import AllRender from "./rendertypes/AllRender";
 import NoRender from "./rendertypes/NoRender";
+import SpecificRender from "./rendertypes/SpecificRender";
 
 const INU_LATITUDE = 37.3751;
 const INU_LONGITUDE = 126.6328;
@@ -17,18 +18,22 @@ let lastDragEndEvent = null;
 
 function Main() {
     const [renderIndex, setRenderIndex] = useState(0)
+    const [routeNo, setRouteNo] = useState("")
 
     const renderMap = async (map) => {
         switch (renderIndex) {
             case 0:
             default:
-                await AllRender(map, mapObjects)
+                AllRender(map, mapObjects)
                 break;
             case 1:
                 NoRender(map, mapObjects)
                 break;
             case 2:
-
+                SpecificRender(map, mapObjects, "shortestroute", routeNo)
+                break;
+            case 3:
+                SpecificRender(map, mapObjects, "optimizedroute", routeNo)
                 break;
         }
     }
@@ -90,16 +95,20 @@ function Main() {
         console.log("render Type: " + index)
     }
 
+    const onRouteNumberTextChanged = (event) => {
+        setRouteNo(event.target.value)
+    }
+
     useEffect(() => {
         // https://gist.github.com/allieus/1180051/ab33229e820a5eb60f8c7971b8d1f1fc8f2cfabb
         // https://fascinate-zsoo.tistory.com/29
-        proj4.defs('TM127', "+proj=tmerc +lat_0=38 +lon_0=127.0028902777777777776 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +towgs84=-146.43,507.89,681.46")
-        proj4.defs('TM128', "+proj=tmerc +lat_0=38 +lon_0=128E +k=0.9999 +x_0=400000 +y_0=600000 +ellps=bessel +towgs84=-146.43,507.89,681.46")
-        proj4.defs('GRS80', "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs")
-        proj4.defs('EPSG:2097', "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43");
-        proj4.defs('EPSG:4326', "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
-
         if(map == null) {
+            proj4.defs('TM127', "+proj=tmerc +lat_0=38 +lon_0=127.0028902777777777776 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +towgs84=-146.43,507.89,681.46")
+            proj4.defs('TM128', "+proj=tmerc +lat_0=38 +lon_0=128E +k=0.9999 +x_0=400000 +y_0=600000 +ellps=bessel +towgs84=-146.43,507.89,681.46")
+            proj4.defs('GRS80', "+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs")
+            proj4.defs('EPSG:2097', "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43");
+            proj4.defs('EPSG:4326', "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+
             map = createMap()
 
             registerDragStartEvent(map)
@@ -114,7 +123,7 @@ function Main() {
 
     return (
         <div className="root">
-            <SelectBar onButtonClick={onButtonClick} />
+            <SelectBar onButtonClick={onButtonClick} onRouteNumberTextChanged={onRouteNumberTextChanged}/>
             <div id='map' style={{
                 width: '100vw',
                 height: '100vh'
