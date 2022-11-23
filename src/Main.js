@@ -4,33 +4,25 @@ import poly from "proj4/lib/projections/poly";
 import SelectBar from "./SelectBar";
 import "./Main.css"
 import AllRender from "./rendertypes/AllRender";
-import noRender from "./rendertypes/NoRender";
 import NoRender from "./rendertypes/NoRender";
 
-const INU_LATITUDE = 37.3751
-const INU_LONGITUDE = 126.6328
+const INU_LATITUDE = 37.3751;
+const INU_LONGITUDE = 126.6328;
 
 const { kakao, proj4 } = window;
 
+let map = null;
+const mapObjects = [];
+let lastDragEndEvent = null;
+
 function Main() {
     const [renderIndex, setRenderIndex] = useState(0)
-    const mapObjects = []
 
-    // const render = (map, mapObjects) => {
-    //     switch (renderModelType) {
-    //         case 0:
-    //             AllRender(map, mapObjects)
-    //             break
-    //     }
-    //
-    //     AllRender(map, mapObjects)
-    // }
-
-    const renderMap = (map) => {
+    const renderMap = async (map) => {
         switch (renderIndex) {
             case 0:
             default:
-                AllRender(map, mapObjects)
+                await AllRender(map, mapObjects)
                 break;
             case 1:
                 NoRender(map, mapObjects)
@@ -54,11 +46,10 @@ function Main() {
 
     const registerDragStartEvent = (map) => {
         const dragStart = function(mouseEvent) {
-            console.log("drag start, " + mapObjects.length)
+            console.log("drag start, " + mapObjects.length + ", " + renderIndex)
             removeAllMapObjects(map)
         }
 
-        kakao.maps.event.removeListener(map, 'dragstart', dragStart)
         kakao.maps.event.addListener(map, 'dragstart', dragStart);
     }
 
@@ -81,16 +72,17 @@ function Main() {
     }
 
     const registerDragEndEvent = (map) => {
+        if(lastDragEndEvent != null)
+            kakao.maps.event.removeListener(map, 'dragend', lastDragEndEvent)
+
         const dragEnd = function(mouseEvent) {
             console.log("drag end, " + mapObjects.length)
 
             renderMap(map)
-            // render(map, mapObjects)
-            // renderModel(map, mapObjects)
         }
 
-        kakao.maps.event.removeListener(map, 'dragend', dragEnd)
         kakao.maps.event.addListener(map, 'dragend', dragEnd);
+        lastDragEndEvent = dragEnd
     }
 
     const onButtonClick = (index) => {
@@ -107,11 +99,17 @@ function Main() {
         proj4.defs('EPSG:2097', "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=500000 +ellps=bessel +units=m +no_defs +towgs84=-115.80,474.99,674.11,1.16,-2.31,-1.63,6.43");
         proj4.defs('EPSG:4326', "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
 
-        const map = createMap()
+        if(map == null) {
+            map = createMap()
 
-        renderMap(map)
-        registerDragStartEvent(map)
+            registerDragStartEvent(map)
+            console.log("init map")
+        }
+
         registerDragEndEvent(map)
+        removeAllMapObjects(map)
+        renderMap(map)
+        console.log("use effect")
     });
 
     return (
