@@ -1,0 +1,57 @@
+
+.selectbar_background {
+    width: 160px;
+    height: 100vh;
+    margin: 10px 0;
+
+    /*background: #e0e5ec;*/
+
+    /*z-index: 0;*/
+    text-align: center;
+    /*opacity: 0.5;*/
+}
+
+button {
+    margin: 10px 20px;
+    outline: none;
+}
+
+.custom-btn {
+    width: 120px;
+    height: 40px;
+    /*padding: 10px 25px;*/
+    border: 2px solid #000;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+}
+
+.selectbar_button {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.selectbar_button:after {
+    position: absolute;
+    content: " ";
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+    -webkit-transform: scale(.1);
+    transform: scale(.1);
+}
+.selectbar_button:hover {
+    color: #fff;
+}
+.selectbar_button:hover:after {
+    background: #000;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    /*opacity: 0.5;*/
+}

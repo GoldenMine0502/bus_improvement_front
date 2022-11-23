@@ -1,0 +1,4 @@
+
+function specificRender(map, mapObjects) {
+
+}
