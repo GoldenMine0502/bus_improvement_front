@@ -1,7 +1,13 @@
 
+body {
+    overflow-y: hidden;
+}
+
 .selectbar_background {
     width: 280px;
     height: 100%;
+    /*overflow-x: scroll;*/
+    /*overflow-y: scroll;*/
 
     /*background: #e0e5ec;*/
 
@@ -31,7 +37,7 @@ button {
 
 .selectbar_button {
     transition: all 0.3s ease;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .selectbar_button:after {
     position: absolute;

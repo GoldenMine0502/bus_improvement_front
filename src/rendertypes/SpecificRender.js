@@ -5,9 +5,10 @@ async function specificRender(map, mapObjects, url, routeNo) {
     // const routeId = "161000007"
 
     const routeId = (await (await fetch(`${domain}/bus/idfromno?routeNo=${routeNo}`)).json())["routeId"]
-    const stations = await (await fetch(`${domain}/bus/allstation`)).json() // List<BusStopStation>
-    const routes = await (await fetch(`${domain}/calculate/${url}?routeNo=${routeId}`)).json() // List<Int>
+    console.log(routeId)
 
+    const stations = await (await fetch(`${domain}/bus/allstation`)).json() // List<BusStopStation>
+    const routes = await (await fetch(`${domain}/calculate/${url}?routeId=${routeId}`)).json() // List<Int>
     console.log(stations)
     console.log(routes)
 

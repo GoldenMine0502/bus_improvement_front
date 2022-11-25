@@ -11,10 +11,12 @@ function SelectBar(props) {
         <div className="selectbar_background">
             <div style={{margin: "30px 0px", fontSize: "38px"}}>Bus<br/>Improvement<br/>Simulation</div>
 
-            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(0)}>All</button>
-            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(1)}>Only Map</button>
-            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(2)}>Shortest</button>
-            <button className="custom-btn selectbar_button" onClick={() => onClickEvent(3)}>Optimized</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('all')}>All</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('no')}>Only Map</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('original')}>Original</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('shortest')}>Shortest</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('optimized')}>Optimized</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('shortestall')}>Shortest All</button>
 
             <div className="empty_margin"/>
             {/*<input type="text"/>*/}

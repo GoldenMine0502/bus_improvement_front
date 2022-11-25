@@ -6,6 +6,7 @@ import "./Main.css"
 import AllRender from "./rendertypes/AllRender";
 import NoRender from "./rendertypes/NoRender";
 import SpecificRender from "./rendertypes/SpecificRender";
+import SpecificAllRender from "./rendertypes/SpecificAllRender";
 
 const INU_LATITUDE = 37.3751;
 const INU_LONGITUDE = 126.6328;
@@ -17,23 +18,30 @@ const mapObjects = [];
 let lastDragEndEvent = null;
 
 function Main() {
-    const [renderIndex, setRenderIndex] = useState(0)
+    const [renderType, setRenderType] = useState("all")
     const [routeNo, setRouteNo] = useState("")
 
-    const renderMap = async (map) => {
-        switch (renderIndex) {
-            case 0:
+    const renderMap = async () => {
+        removeAllMapObjects()
+        switch (renderType) {
+            case "all":
             default:
                 AllRender(map, mapObjects)
                 break;
-            case 1:
+            case "no":
                 NoRender(map, mapObjects)
                 break;
-            case 2:
+            case "original":
+                SpecificRender(map, mapObjects, "originalroute", routeNo)
+                break;
+            case "shortest":
                 SpecificRender(map, mapObjects, "shortestroute", routeNo)
                 break;
-            case 3:
+            case "optimized":
                 SpecificRender(map, mapObjects, "optimizedroute", routeNo)
+                break;
+            case "shortestall":
+                SpecificAllRender(map, mapObjects, "allshortestroute")
                 break;
         }
     }
@@ -49,16 +57,16 @@ function Main() {
         return new kakao.maps.Map(container, options)
     }
 
-    const registerDragStartEvent = (map) => {
+    const registerDragStartEvent = () => {
         const dragStart = function(mouseEvent) {
-            console.log("drag start, " + mapObjects.length + ", " + renderIndex)
+            console.log("drag start, " + mapObjects.length + ", " + renderType)
             removeAllMapObjects(map)
         }
 
         kakao.maps.event.addListener(map, 'dragstart', dragStart);
     }
 
-    const removeAllMapObjects = (map) => {
+    const removeAllMapObjects = () => {
         while(mapObjects.length > 0) {
             const obj = mapObjects.pop();
 
@@ -76,7 +84,7 @@ function Main() {
         }
     }
 
-    const registerDragEndEvent = (map) => {
+    const registerDragEndEvent = () => {
         if(lastDragEndEvent != null)
             kakao.maps.event.removeListener(map, 'dragend', lastDragEndEvent)
 
@@ -90,9 +98,9 @@ function Main() {
         lastDragEndEvent = dragEnd
     }
 
-    const onButtonClick = (index) => {
-        setRenderIndex(index)
-        console.log("render Type: " + index)
+    const onButtonClick = (type) => {
+        setRenderType(type)
+        console.log("render Type: " + type)
     }
 
     const onRouteNumberTextChanged = (event) => {
@@ -111,13 +119,12 @@ function Main() {
 
             map = createMap()
 
-            registerDragStartEvent(map)
+            registerDragStartEvent()
             console.log("init map")
         }
 
-        registerDragEndEvent(map)
-        removeAllMapObjects(map)
-        renderMap(map)
+        registerDragEndEvent()
+        renderMap()
         console.log("use effect")
     });
 
