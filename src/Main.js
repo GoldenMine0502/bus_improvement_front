@@ -26,10 +26,10 @@ function Main() {
         switch (renderType) {
             case "all":
             default:
-                AllRender(map, mapObjects)
+                AllRender(map, mapObjects, 0.025, 0.015, 12)
                 break;
-            case "no":
-                NoRender(map, mapObjects)
+            case "allbig":
+                AllRender(map, mapObjects, 0.1, 0.04, 5)
                 break;
             case "original":
                 SpecificRender(map, mapObjects, "originalroute", routeNo)

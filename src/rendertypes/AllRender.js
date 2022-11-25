@@ -2,13 +2,13 @@
 let lastUpdate = -1
 const { kakao, proj4 } = window;
 
-async function render(map, mapObjects) {
+async function render(map, mapObjects, rangeX, rangeY, fontSize) {
     const domain = "http://localhost:8080"
     const center = map.getCenter();
     const lng = center.getLng();
     const lat = center.getLat();
-    const rangeX = 0.025
-    const rangeY = 0.015
+    // const rangeX = 0.1
+    // const rangeY = 0.05
 
     const currentUpdate = Date.now()
     lastUpdate = currentUpdate
@@ -217,7 +217,7 @@ async function render(map, mapObjects) {
 
                 // 11,111,111,111
 
-                const content = `<div>${reverseString(total)}</div>`;
+                const content = `<div style="font-size: ${fontSize}pt">${reverseString(total)}</div>`;
 
                 const customOverlay = new kakao.maps.CustomOverlay({
                     position: latLng,

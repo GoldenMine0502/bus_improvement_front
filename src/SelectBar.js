@@ -12,7 +12,7 @@ function SelectBar(props) {
             <div style={{margin: "30px 0px", fontSize: "38px"}}>Bus<br/>Improvement<br/>Simulation</div>
 
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent('all')}>All</button>
-            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('no')}>Only Map</button>
+            <button className="custom-btn selectbar_button" onClick={() => onClickEvent('allbig')}>All(bigger)</button>
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent('original')}>Original</button>
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent('shortest')}>Shortest</button>
             <button className="custom-btn selectbar_button" onClick={() => onClickEvent('optimized')}>Optimized</button>
