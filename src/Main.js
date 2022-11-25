@@ -4,7 +4,6 @@ import poly from "proj4/lib/projections/poly";
 import SelectBar from "./SelectBar";
 import "./Main.css"
 import AllRender from "./rendertypes/AllRender";
-import NoRender from "./rendertypes/NoRender";
 import SpecificRender from "./rendertypes/SpecificRender";
 import SpecificAllRender from "./rendertypes/SpecificAllRender";
 
