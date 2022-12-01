@@ -3,7 +3,7 @@ let lastUpdate = -1
 const { kakao, proj4 } = window;
 
 async function render(map, mapObjects, rangeX, rangeY, fontSize) {
-    const domain = "http://localhost:8080"
+    const domain = "http://web.goldenmine.kr:8080"
     const center = map.getCenter();
     const lng = center.getLng();
     const lat = center.getLat();
