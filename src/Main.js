@@ -30,17 +30,32 @@ function Main() {
             case "allbig":
                 AllRender(map, mapObjects, 0.1, 0.04, 5)
                 break;
-            case "original":
-                SpecificRender(map, mapObjects, "originalroute", routeNo)
+            case "dijkstra":
+                SpecificRender(map, mapObjects, "dijkstraroute", routeNo)
+                break;
+            case "dijkstragreedy5":
+                SpecificRender(map, mapObjects, "dijkstragreedy5route", routeNo)
+                break;
+            case "dijkstragreedy25":
+                SpecificRender(map, mapObjects, "dijkstragreedy25route", routeNo)
                 break;
             case "shortest":
                 SpecificRender(map, mapObjects, "shortestroute", routeNo)
                 break;
-            case "optimized":
-                SpecificRender(map, mapObjects, "optimizedroute", routeNo)
+            case "original":
+                SpecificRender(map, mapObjects, "originalroute", routeNo)
                 break;
             case "shortestall":
                 SpecificAllRender(map, mapObjects, "allshortestroute")
+                break;
+            case "dijkstraall":
+                SpecificAllRender(map, mapObjects, "alldijkstraroute")
+                break;
+            case "dijkstragreedyall5":
+                SpecificAllRender(map, mapObjects, "alldijkstragreedy5route")
+                break;
+            case "dijkstragreedyall25":
+                SpecificAllRender(map, mapObjects, "alldijkstragreedy25route")
                 break;
         }
     }
