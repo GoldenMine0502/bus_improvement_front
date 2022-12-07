@@ -5,8 +5,9 @@ body {
 
 .selectbar_background {
     width: 280px;
-    height: 100%;
-    /*overflow-x: scroll;*/
+    height: 80%;
+    /*overflow-x: hidden;*/
+    /*overflow-y:scroll;*/
     /*overflow-y: scroll;*/
 
     /*background: #e0e5ec;*/
@@ -14,6 +15,8 @@ body {
     /*z-index: 0;*/
     text-align: center;
     /*opacity: 0.5;*/
+
+    padding-bottom: 100px;
 }
 
 button {
