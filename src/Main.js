@@ -6,6 +6,7 @@ import "./Main.css"
 import AllRender from "./rendertypes/AllRender";
 import SpecificRender from "./rendertypes/SpecificRender";
 import SpecificAllRender from "./rendertypes/SpecificAllRender";
+import GwangjinRender from "./rendertypes/GwangjinRender";
 
 const INU_LATITUDE = 37.3751;
 const INU_LONGITUDE = 126.6328;
@@ -17,45 +18,23 @@ const mapObjects = [];
 let lastDragEndEvent = null;
 
 function Main() {
-    const [renderType, setRenderType] = useState("all")
+    const [renderType, setRenderType] = useState("SHORTEST_ALL")
     const [routeNo, setRouteNo] = useState("")
 
     const renderMap = async () => {
         removeAllMapObjects()
         switch (renderType) {
-            case "all":
-            default:
-                AllRender(map, mapObjects, 0.025, 0.015, 12)
+            case "SHORTEST_ALL":
+                GwangjinRender(map, mapObjects, "SHORTEST");
                 break;
-            case "allbig":
-                AllRender(map, mapObjects, 0.1, 0.04, 5)
+            case "DIJKSTRA_ALL":
+                GwangjinRender(map, mapObjects, "DIJKSTRA");
                 break;
-            case "dijkstra":
-                SpecificRender(map, mapObjects, "dijkstraroute", routeNo)
+            case "DIJKSTRA_GREEDY_5_ALL":
+                GwangjinRender(map, mapObjects, "DIJKSTRA_GREEDY_5");
                 break;
-            case "dijkstragreedy5":
-                SpecificRender(map, mapObjects, "dijkstragreedy5route", routeNo)
-                break;
-            case "dijkstragreedy25":
-                SpecificRender(map, mapObjects, "dijkstragreedy25route", routeNo)
-                break;
-            case "shortest":
-                SpecificRender(map, mapObjects, "shortestroute", routeNo)
-                break;
-            case "original":
-                SpecificRender(map, mapObjects, "originalroute", routeNo)
-                break;
-            case "shortestall":
-                SpecificAllRender(map, mapObjects, "allshortestroute")
-                break;
-            case "dijkstraall":
-                SpecificAllRender(map, mapObjects, "alldijkstraroute")
-                break;
-            case "dijkstragreedyall5":
-                SpecificAllRender(map, mapObjects, "alldijkstragreedy5route")
-                break;
-            case "dijkstragreedyall25":
-                SpecificAllRender(map, mapObjects, "alldijkstragreedy25route")
+            case "DIJKSTRA_GREEDY_25_ALL":
+                GwangjinRender(map, mapObjects, "DIJKSTRA_GREEDY_25");
                 break;
         }
     }
