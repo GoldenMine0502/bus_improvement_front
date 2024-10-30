@@ -1,7 +1,7 @@
 const {kakao, proj4} = window;
 
 async function specificAllRender(map, mapObjects, url) {
-    const domain = "http://home.goldenmine.kr:8080"
+    const domain = "http://home.goldenmine.kr:8090"
 
     const stations = await (await fetch(`${domain}/bus/allstation`)).json() // List<BusStopStation>
     const paths = await (await fetch(`${domain}/calculate/${url}`)).json() // List<BusStopStation>
